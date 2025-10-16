@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <h1>Viva Valyria!</h1>
+      <h1>Simulador de Vuelos</h1>
     </>
   )
 }
