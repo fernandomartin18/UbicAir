@@ -1,0 +1,28 @@
+.home-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.home-container h1 {
+  color: #646cff;
+  margin-bottom: 1rem;
+}
+
+.home-container p {
+  font-size: 1.2rem;
+  color: #888;
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 1rem;
+  }
+
+  .home-container h1 {
+    font-size: 2em;
+  }
+
+  .home-container p {
+    font-size: 1rem;
+  }
+}
