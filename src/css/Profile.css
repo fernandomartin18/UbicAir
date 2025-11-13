@@ -312,6 +312,7 @@
   text-align: center;
   padding: 8px;
   transition: opacity 0.3s ease;
+  font-size: 16px;
 }
 
 .cancel-password-btn:hover {

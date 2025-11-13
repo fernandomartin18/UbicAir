@@ -204,15 +204,8 @@ function Profile() {
           foto: updatedData.fotoPerfil || datosActualizar.foto || null
         });
         
-        setSuccessMessage('Cambios guardados correctamente');
-        setShowPasswordChange(false);
-        setPasswordData({ newPassword: '', confirmPassword: '' });
-        setSelectedFile(null);
-        setPreviewImage(null);
-        
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 3000);
+        // Cerrar el modal automáticamente
+        handleModalClose();
       } else {
         const errorData = await response.json();
         setErrors({ general: errorData.error || errorData.message || 'Error al guardar los cambios' });
