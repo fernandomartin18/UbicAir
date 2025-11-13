@@ -52,9 +52,28 @@ function Signup() {
       // Registro exitoso
       console.log('Usuario registrado:', data)
       
-      // Opcional: guardar datos del usuario en localStorage
-      if (data.data) {
-        localStorage.setItem('user', JSON.stringify(data.data))
+      // Ahora hacer login para obtener el token
+      try {
+        const loginResponse = await fetch(API_ENDPOINTS.LOGIN, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        })
+
+        const loginData = await loginResponse.json()
+
+        if (loginResponse.ok && loginData.data) {
+          localStorage.setItem('user', JSON.stringify(loginData.data))
+          localStorage.setItem('token', loginData.data.token)
+          localStorage.setItem('userId', loginData.data._id)
+        }
+      } catch (loginErr) {
+        console.error('Error al hacer login automático:', loginErr)
       }
 
       // Redirigir al home

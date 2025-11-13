@@ -39,6 +39,8 @@ function Login() {
       // Guardar datos del usuario en localStorage
       if (data.data) {
         localStorage.setItem('user', JSON.stringify(data.data))
+        localStorage.setItem('token', data.data.token)
+        localStorage.setItem('userId', data.data._id)
       }
 
       // Redirigir al home

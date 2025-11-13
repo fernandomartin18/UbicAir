@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/Profile.css';
 import { API_ENDPOINTS } from '../config/api';
 
 function Profile() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState({
     nombre: '',
@@ -42,11 +44,13 @@ function Profile() {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const responseData = await response.json();
+          const data = responseData.data || responseData;
+          
           setUserData({
             nombre: data.nombre || '',
             email: data.email || '',
-            foto: data.foto || null
+            foto: data.fotoPerfil || null
           });
           setEditData({
             nombre: data.nombre || '',
@@ -87,6 +91,18 @@ function Profile() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validar tamaño del archivo (máx 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors({ foto: 'La imagen no puede superar los 5MB' });
+        return;
+      }
+
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        setErrors({ foto: 'El archivo debe ser una imagen' });
+        return;
+      }
+
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -150,32 +166,42 @@ function Profile() {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
 
-      const formData = new FormData();
-      formData.append('nombre', editData.nombre);
-      formData.append('email', editData.email);
-      
-      if (showPasswordChange && passwordData.newPassword) {
-        formData.append('password', passwordData.newPassword);
+      // Preparar los datos a enviar
+      const datosActualizar = {
+        nombre: editData.nombre,
+        email: editData.email
+      };
+
+      // Si hay una nueva foto, convertirla a base64
+      if (selectedFile) {
+        datosActualizar.foto = previewImage;
+      } else if (previewImage === null && userData.foto !== null) {
+        // Si se eliminó la foto
+        datosActualizar.foto = null;
       }
 
-      if (selectedFile) {
-        formData.append('foto', selectedFile);
+      // Si se está cambiando la contraseña
+      if (showPasswordChange && passwordData.newPassword) {
+        datosActualizar.password = passwordData.newPassword;
       }
 
       const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: formData
+        body: JSON.stringify(datosActualizar)
       });
 
       if (response.ok) {
-        const updatedData = await response.json();
+        const responseData = await response.json();
+        const updatedData = responseData.data || responseData;
+        
         setUserData({
           nombre: updatedData.nombre || editData.nombre,
           email: updatedData.email || editData.email,
-          foto: updatedData.foto || (previewImage || userData.foto)
+          foto: updatedData.fotoPerfil || datosActualizar.foto || null
         });
         
         setSuccessMessage('Cambios guardados correctamente');
@@ -189,7 +215,7 @@ function Profile() {
         }, 3000);
       } else {
         const errorData = await response.json();
-        setErrors({ general: errorData.message || 'Error al guardar los cambios' });
+        setErrors({ general: errorData.error || errorData.message || 'Error al guardar los cambios' });
       }
     } catch (error) {
       console.error('Error al guardar cambios:', error);
@@ -200,7 +226,8 @@ function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    window.location.href = '/login';
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   return (
@@ -249,7 +276,6 @@ function Profile() {
                     onClick={() => {
                       setPreviewImage(null);
                       setSelectedFile(null);
-                      setUserData(prev => ({ ...prev, foto: null }));
                     }}
                     disabled={!previewImage && !userData.foto}
                     title="Eliminar foto"
