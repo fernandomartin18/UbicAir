@@ -16,7 +16,6 @@ function Profile() {
     email: ''
   });
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -82,7 +81,7 @@ function Profile() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setShowPasswordChange(false);
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    setPasswordData({ newPassword: '', confirmPassword: '' });
     setSelectedFile(null);
     setPreviewImage(null);
     setErrors({});
@@ -143,12 +142,8 @@ function Profile() {
     }
 
     if (showPasswordChange) {
-      if (!passwordData.currentPassword) {
-        newErrors.currentPassword = 'La contraseña actual es obligatoria';
-      }
-
       if (!passwordData.newPassword) {
-        newErrors.newPassword = 'La nueva contraseña es obligatoria';
+        newErrors.newPassword = 'La contraseña es obligatoria';
       } else if (passwordData.newPassword.length < 6) {
         newErrors.newPassword = 'La contraseña debe tener al menos 6 caracteres';
       }
@@ -170,93 +165,51 @@ function Profile() {
     try {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
-      let updatedUserData = { ...userData };
 
-      // 1. Actualizar datos básicos (nombre y email)
-      const datosBasicos = {
+      // Preparar los datos a enviar
+      const datosActualizar = {
         nombre: editData.nombre,
         email: editData.email
       };
 
-      const responseBasicos = await fetch(`${API_ENDPOINTS.USERS}/${userId}`, {
+      // Si hay una nueva foto, convertirla a base64
+      if (selectedFile) {
+        datosActualizar.foto = previewImage;
+      } else if (previewImage === null && userData.foto !== null) {
+        // Si se eliminó la foto
+        datosActualizar.foto = null;
+      }
+
+      // Si se está cambiando la contraseña
+      if (showPasswordChange && passwordData.newPassword) {
+        datosActualizar.password = passwordData.newPassword;
+      }
+
+      const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(datosBasicos)
+        body: JSON.stringify(datosActualizar)
       });
 
-      if (!responseBasicos.ok) {
-        const errorData = await responseBasicos.json();
-        setErrors({ general: errorData.error || 'Error al actualizar datos básicos' });
-        return;
-      }
-
-      const datosBasicosResponse = await responseBasicos.json();
-      updatedUserData = {
-        nombre: datosBasicosResponse.data.nombre,
-        email: datosBasicosResponse.data.email,
-        foto: datosBasicosResponse.data.fotoPerfil
-      };
-
-      // 2. Actualizar foto de perfil (si cambió)
-      if (selectedFile || (previewImage === null && userData.foto !== null)) {
-        const fotoUrl = previewImage || null;
+      if (response.ok) {
+        const responseData = await response.json();
+        const updatedData = responseData.data || responseData;
         
-        const responseFoto = await fetch(`${API_ENDPOINTS.USERS}/${userId}/foto-perfil`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ fotoPerfil: fotoUrl })
+        setUserData({
+          nombre: updatedData.nombre || editData.nombre,
+          email: updatedData.email || editData.email,
+          foto: updatedData.fotoPerfil || datosActualizar.foto || null
         });
-
-        if (responseFoto.ok) {
-          const fotoResponse = await responseFoto.json();
-          updatedUserData.foto = fotoResponse.data.fotoPerfil;
-        } else {
-          console.warn('Error al actualizar foto de perfil');
-        }
+        
+        // Cerrar el modal automáticamente
+        handleModalClose();
+      } else {
+        const errorData = await response.json();
+        setErrors({ general: errorData.error || errorData.message || 'Error al guardar los cambios' });
       }
-
-      // 3. Cambiar contraseña (si se especificó)
-      if (showPasswordChange && passwordData.newPassword) {
-        const responsePassword = await fetch(`${API_ENDPOINTS.USERS}/${userId}/password`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            passwordActual: passwordData.currentPassword,
-            passwordNueva: passwordData.newPassword
-          })
-        });
-
-        if (!responsePassword.ok) {
-          const errorData = await responsePassword.json();
-          setErrors({ general: errorData.error || 'Error al cambiar contraseña' });
-          return;
-        }
-
-        const passwordResponse = await responsePassword.json();
-        // Actualizar con los datos del usuario que devuelve el cambio de contraseña
-        updatedUserData = {
-          nombre: passwordResponse.data.nombre,
-          email: passwordResponse.data.email,
-          foto: passwordResponse.data.fotoPerfil
-        };
-      }
-
-      // Actualizar el estado con todos los cambios
-      setUserData(updatedUserData);
-      
-      // Cerrar el modal automáticamente
-      handleModalClose();
-      setSuccessMessage('Cambios guardados correctamente');
-      
     } catch (error) {
       console.error('Error al guardar cambios:', error);
       setErrors({ general: 'Error de conexión con el servidor' });
@@ -378,19 +331,6 @@ function Profile() {
                   ) : (
                     <>
                       <div className="form-group">
-                        <label htmlFor="currentPassword">Contraseña actual</label>
-                        <input
-                          type="password"
-                          id="currentPassword"
-                          name="currentPassword"
-                          value={passwordData.currentPassword}
-                          onChange={handlePasswordChange}
-                          className={errors.currentPassword ? 'error' : ''}
-                        />
-                        {errors.currentPassword && <span className="error-text">{errors.currentPassword}</span>}
-                      </div>
-
-                      <div className="form-group">
                         <label htmlFor="newPassword">Nueva contraseña</label>
                         <input
                           type="password"
@@ -420,7 +360,7 @@ function Profile() {
                         className="cancel-password-btn"
                         onClick={() => {
                           setShowPasswordChange(false);
-                          setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                          setPasswordData({ newPassword: '', confirmPassword: '' });
                         }}
                       >
                         Cancelar cambio de contraseña
