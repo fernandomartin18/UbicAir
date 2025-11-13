@@ -89,13 +89,13 @@ function Signup() {
   return (
     <div className="signup-container">
       <div className="signup-box">
-        <h2>Create Account</h2>
+        <h2>Crear Cuenta</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Nombre"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
@@ -115,7 +115,7 @@ function Signup() {
           <div className="form-group">
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -126,7 +126,7 @@ function Signup() {
           <div className="form-group">
             <input
               type="password"
-              placeholder="Confirm Password"
+              placeholder="Confirmar Contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -134,13 +134,13 @@ function Signup() {
             />
           </div>
           <button type="submit" disabled={loading}>
-            {loading ? 'Registrando...' : 'Sign Up'}
+            {loading ? 'Registrando...' : 'Registrarse'}
           </button>
         </form>
         <p>
-          Already have an account?{' '}
+          ¿Ya tienes una cuenta?{' '}
           <span onClick={() => navigate('/login')} className="login-link">
-            Login
+            Iniciar sesión
           </span>
         </p>
       </div>
