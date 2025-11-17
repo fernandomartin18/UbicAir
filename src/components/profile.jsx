@@ -166,18 +166,22 @@ function Profile() {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
 
-      // Preparar los datos a enviar
-      const datosActualizar = {
-        nombre: editData.nombre,
-        email: editData.email
-      };
+      // Preparar los datos a enviar - solo los campos que cambiaron
+      const datosActualizar = {};
+      
+      // Solo enviar nombre si cambió
+      if (editData.nombre !== userData.nombre) {
+        datosActualizar.nombre = editData.nombre;
+      }
+      
+      // Solo enviar email si cambió
+      if (editData.email !== userData.email) {
+        datosActualizar.email = editData.email;
+      }
 
-      // Si hay una nueva foto, convertirla a base64
+      // Si hay una nueva foto seleccionada, enviarla
       if (selectedFile) {
         datosActualizar.foto = previewImage;
-      } else if (previewImage === null && userData.foto !== null) {
-        // Si se eliminó la foto
-        datosActualizar.foto = null;
       }
 
       // Si se está cambiando la contraseña
