@@ -113,6 +113,35 @@ function Profile() {
     }
   };
 
+  const handleDeletePhoto = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+
+      const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ foto: null })
+      });
+
+      if (response.ok) {
+        setUserData(prev => ({ ...prev, foto: null }));
+        setPreviewImage(null);
+        setSelectedFile(null);
+      } else {
+        const errorData = await response.json();
+        const errorMessage = errorData.error || 'Error al eliminar la foto';
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error('Error al eliminar foto:', error);
+      alert('Error de conexión con el servidor');
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditData(prev => ({
@@ -280,10 +309,7 @@ function Profile() {
                   />
                   <button 
                     className="delete-photo-btn"
-                    onClick={() => {
-                      setPreviewImage(null);
-                      setSelectedFile(null);
-                    }}
+                    onClick={handleDeletePhoto}
                     disabled={!previewImage && !userData.foto}
                     title="Eliminar foto"
                   >
