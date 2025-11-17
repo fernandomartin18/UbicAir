@@ -218,11 +218,15 @@ function Profile() {
         handleModalClose();
       } else {
         const errorData = await response.json();
-        setErrors({ general: errorData.error || errorData.message || 'Error al guardar los cambios' });
+        const errorMessage = errorData.error || errorData.message || 'Error al guardar los cambios';
+        setErrors({ general: errorMessage });
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Error al guardar cambios:', error);
-      setErrors({ general: 'Error de conexión con el servidor' });
+      const errorMessage = 'Error de conexión con el servidor';
+      setErrors({ general: errorMessage });
+      alert(errorMessage);
     }
   };
 
