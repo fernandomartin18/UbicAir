@@ -16,6 +16,7 @@ function Profile() {
     email: ''
   });
   const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -81,7 +82,7 @@ function Profile() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setShowPasswordChange(false);
-    setPasswordData({ newPassword: '', confirmPassword: '' });
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     setSelectedFile(null);
     setPreviewImage(null);
     setErrors({});
@@ -142,6 +143,10 @@ function Profile() {
     }
 
     if (showPasswordChange) {
+      if (!passwordData.currentPassword) {
+        newErrors.currentPassword = 'La contraseña actual es obligatoria';
+      }
+
       if (!passwordData.newPassword) {
         newErrors.newPassword = 'La contraseña es obligatoria';
       } else if (passwordData.newPassword.length < 6) {
@@ -186,6 +191,7 @@ function Profile() {
 
       // Si se está cambiando la contraseña
       if (showPasswordChange && passwordData.newPassword) {
+        datosActualizar.currentPassword = passwordData.currentPassword;
         datosActualizar.password = passwordData.newPassword;
       }
 
@@ -335,6 +341,19 @@ function Profile() {
                   ) : (
                     <>
                       <div className="form-group">
+                        <label htmlFor="currentPassword">Contraseña actual</label>
+                        <input
+                          type="password"
+                          id="currentPassword"
+                          name="currentPassword"
+                          value={passwordData.currentPassword}
+                          onChange={handlePasswordChange}
+                          className={errors.currentPassword ? 'error' : ''}
+                        />
+                        {errors.currentPassword && <span className="error-text">{errors.currentPassword}</span>}
+                      </div>
+
+                      <div className="form-group">
                         <label htmlFor="newPassword">Nueva contraseña</label>
                         <input
                           type="password"
@@ -364,7 +383,7 @@ function Profile() {
                         className="cancel-password-btn"
                         onClick={() => {
                           setShowPasswordChange(false);
-                          setPasswordData({ newPassword: '', confirmPassword: '' });
+                          setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
                         }}
                       >
                         Cancelar cambio de contraseña
