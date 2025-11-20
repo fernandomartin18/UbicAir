@@ -1,9 +1,40 @@
 .home-container {
   text-align: center;
-  padding: 2rem;
+  padding: 5rem 1rem 1rem;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.home-container h1 {
+/* Hero Section */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  margin-bottom: 10rem;
+  transition: opacity 0.3s ease-out;
+}
+
+.hero-title {
+  font-size: 12rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  letter-spacing: -2px;
+}
+
+.hero-subtitle {
+  font-size: 18rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+  margin-top: 0;
+}
+
+.home-container h1:not(.hero-title) {
   color: #646cff;
   margin-bottom: 1rem;
 }
@@ -11,6 +42,95 @@
 .home-container p {
   font-size: 1.2rem;
   color: #888;
+  margin-bottom: 2rem;
+}
+
+/* Secciones agrupadas */
+.dashboard-section-group {
+  margin: 3rem 0;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #646cff;
+  text-align: left;
+  padding-left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-icon {
+  font-size: 32px;
+  color: #646cff;
+}
+
+/* Grid de gráficos dentro de cada sección */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0;
+}
+
+/* Responsive grid para pantallas grandes */
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .section-title {
+    font-size: 32px;
+    padding-left: 2rem;
+  }
+}
+
+/* Pantallas extra grandes */
+@media (min-width: 1600px) {
+  .dashboard-grid {
+    padding: 0 2rem;
+  }
+}
+
+/* Responsive para hero section */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 50vh;
+    margin-bottom: 3rem;
+  }
+  
+  .hero-title {
+    font-size: 5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    min-height: 40vh;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    letter-spacing: -1px;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
 }
 
 @media (max-width: 480px) {
