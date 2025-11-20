@@ -1,6 +1,8 @@
 .home-container {
   text-align: center;
   padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .home-container h1 {
@@ -11,6 +13,12 @@
 .home-container p {
   font-size: 1.2rem;
   color: #888;
+  margin-bottom: 2rem;
+}
+
+.dashboard-section {
+  text-align: left;
+  margin-top: 2rem;
 }
 
 @media (max-width: 480px) {
