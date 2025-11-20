@@ -1,5 +1,6 @@
 import '../css/home.css'
 import Profile from '../components/profile'
+import Navbar from '../components/Navbar'
 import FlightStats from '../components/charts/FlightStats'
 import DelayAnalysis from '../components/charts/DelayAnalysis'
 import AirlineComparison from '../components/charts/AirlineComparison'
@@ -9,11 +10,12 @@ import TimeAnalysis from '../components/charts/TimeAnalysis'
 function Home() {
   return (
     <div className="home-container">
+      <Navbar />
       <Profile />
       <h1>UbicAir</h1>
       
       {/* Sección: Vista General */}
-      <section className="dashboard-section-group">
+      <section id="vista-general" className="dashboard-section-group">
         <h2 className="section-title">📊 Vista General</h2>
         <div className="dashboard-grid">
           <FlightStats />
@@ -21,7 +23,7 @@ function Home() {
       </section>
 
       {/* Sección: Análisis de Retrasos */}
-      <section className="dashboard-section-group">
+      <section id="retrasos" className="dashboard-section-group">
         <h2 className="section-title">⏱️ Análisis de Retrasos</h2>
         <div className="dashboard-grid">
           <DelayAnalysis />
@@ -29,7 +31,7 @@ function Home() {
       </section>
 
       {/* Sección: Aerolíneas */}
-      <section className="dashboard-section-group">
+      <section id="aerolineas" className="dashboard-section-group">
         <h2 className="section-title">✈️ Comparación de Aerolíneas</h2>
         <div className="dashboard-grid">
           <AirlineComparison />
@@ -37,7 +39,7 @@ function Home() {
       </section>
 
       {/* Sección: Rutas */}
-      <section className="dashboard-section-group">
+      <section id="rutas" className="dashboard-section-group">
         <h2 className="section-title">🗺️ Rutas Más Frecuentes</h2>
         <div className="dashboard-grid">
           <PopularRoutes />
@@ -45,7 +47,7 @@ function Home() {
       </section>
 
       {/* Sección: Análisis Temporal */}
-      <section className="dashboard-section-group">
+      <section id="temporal" className="dashboard-section-group">
         <h2 className="section-title">📅 Análisis Temporal</h2>
         <div className="dashboard-grid">
           <TimeAnalysis />
