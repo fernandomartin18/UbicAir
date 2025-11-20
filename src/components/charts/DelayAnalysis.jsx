@@ -59,11 +59,9 @@ function DelayAnalysis() {
   }
 
   return (
-    <div className="chart-container">
-      <h2 className="chart-title">Análisis de Retrasos</h2>
-      
-      <div className="chart-wrapper">
-        <h3>Tendencia Mensual de Retrasos (Promedio en minutos)</h3>
+    <>
+      <div className="chart-container">
+        <h2 className="chart-title">Tendencia Mensual de Retrasos</h2>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={delayData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -89,8 +87,8 @@ function DelayAnalysis() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Distribución de Retrasos</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Distribución de Retrasos</h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={distribution}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -102,16 +100,7 @@ function DelayAnalysis() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-
-      <div className="insights">
-        <h3>Insights</h3>
-        <ul>
-          <li>Los retrasos son más frecuentes en los meses de verano (julio-agosto)</li>
-          <li>La mayoría de los vuelos tienen retrasos menores a 15 minutos</li>
-          <li>Los retrasos en salida tienden a ser mayores que los de llegada</li>
-        </ul>
-      </div>
-    </div>
+    </>
   );
 }
 

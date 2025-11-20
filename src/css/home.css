@@ -1,8 +1,8 @@
 .home-container {
   text-align: center;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1rem;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .home-container h1 {
@@ -16,9 +16,51 @@
   margin-bottom: 2rem;
 }
 
-.dashboard-section {
+/* Secciones agrupadas */
+.dashboard-section-group {
+  margin: 3rem 0;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #646cff;
   text-align: left;
-  margin-top: 2rem;
+  padding-left: 1rem;
+}
+
+/* Grid de gráficos dentro de cada sección */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0;
+}
+
+/* Responsive grid para pantallas grandes */
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .section-title {
+    font-size: 32px;
+    padding-left: 2rem;
+  }
+}
+
+/* Pantallas extra grandes */
+@media (min-width: 1600px) {
+  .dashboard-grid {
+    padding: 0 2rem;
+  }
 }
 
 @media (max-width: 480px) {

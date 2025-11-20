@@ -81,11 +81,9 @@ function AirlineComparison() {
   }
 
   return (
-    <div className="chart-container">
-      <h2 className="chart-title">Comparación de Aerolíneas</h2>
-      
-      <div className="chart-wrapper">
-        <h3>Puntualidad por Aerolínea (%)</h3>
+    <>
+      <div className="chart-container">
+        <h2 className="chart-title">Puntualidad por Aerolínea</h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={airlineStats}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -103,8 +101,8 @@ function AirlineComparison() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Número de Vuelos por Aerolínea</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Volumen de Vuelos por Aerolínea</h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={airlineStats} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
@@ -117,8 +115,8 @@ function AirlineComparison() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Rendimiento Multidimensional</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Rendimiento Multidimensional</h2>
         <ResponsiveContainer width="100%" height={400}>
           <RadarChart data={performanceData}>
             <PolarGrid />
@@ -137,32 +135,34 @@ function AirlineComparison() {
         </ResponsiveContainer>
       </div>
 
-      <div className="airline-table">
-        <h3>Resumen Detallado</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Aerolínea</th>
-              <th>Vuelos</th>
-              <th>% Puntual</th>
-              <th>Retraso Prom.</th>
-              <th>Dist. Prom.</th>
-            </tr>
-          </thead>
-          <tbody>
-            {airlineStats.map((airline, index) => (
-              <tr key={index}>
-                <td>{airline.airline}</td>
-                <td>{airline.flights.toLocaleString()}</td>
-                <td>{airline.onTime}%</td>
-                <td>{airline.avgDelay.toFixed(1)} min</td>
-                <td>{airline.avgDistance.toFixed(0)} km</td>
+      <div className="chart-container">
+        <h2 className="chart-title">Resumen Detallado de Aerolíneas</h2>
+        <div className="airline-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Aerolínea</th>
+                <th>Vuelos</th>
+                <th>% Puntual</th>
+                <th>Retraso Prom.</th>
+                <th>Dist. Prom.</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {airlineStats.map((airline, index) => (
+                <tr key={index}>
+                  <td>{airline.airline}</td>
+                  <td>{airline.flights.toLocaleString()}</td>
+                  <td>{airline.onTime}%</td>
+                  <td>{airline.avgDelay.toFixed(1)} min</td>
+                  <td>{airline.avgDistance.toFixed(0)} km</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

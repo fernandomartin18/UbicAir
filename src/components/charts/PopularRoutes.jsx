@@ -103,11 +103,9 @@ function PopularRoutes() {
   }
 
   return (
-    <div className="chart-container">
-      <h2 className="chart-title">Rutas Más Frecuentes</h2>
-      
-      <div className="chart-wrapper">
-        <h3>Top 8 Rutas por Número de Vuelos</h3>
+    <>
+      <div className="chart-container">
+        <h2 className="chart-title">Rutas con Mayor Tráfico</h2>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={topRoutes}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -125,73 +123,73 @@ function PopularRoutes() {
         </ResponsiveContainer>
       </div>
 
-      <div className="charts-row">
-        <div className="chart-wrapper half-width">
-          <h3>Distribución por Distancia</h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={routesByDistance}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ category, value }) => `${category.split(' ')[0]}: ${value}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {routesByDistance.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-wrapper half-width">
-          <h3>Puntualidad por Ruta Top</h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={topRoutes.slice(0, 5)} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis dataKey="route" type="category" width={100} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="onTimeRate" fill="#4CAF50" name="% Puntualidad" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="chart-container">
+        <h2 className="chart-title">Distribución por Distancia</h2>
+        <ResponsiveContainer width="100%" height={350}>
+          <PieChart>
+            <Pie
+              data={routesByDistance}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ category, value }) => `${category.split(' ')[0]}: ${value}%`}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {routesByDistance.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
 
-      <div className="routes-table">
-        <h3>Detalle de Rutas Principales</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Ruta</th>
-              <th>Vuelos</th>
-              <th>Distancia (km)</th>
-              <th>Retraso Prom.</th>
-              <th>% Puntual</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topRoutes.map((route, index) => (
-              <tr key={index}>
-                <td><strong>{route.route}</strong></td>
-                <td>{route.flights.toLocaleString()}</td>
-                <td>{route.distance.toLocaleString()}</td>
-                <td>{route.avgDelay.toFixed(1)} min</td>
-                <td className={route.onTimeRate >= 75 ? 'good' : 'warning'}>
-                  {route.onTimeRate}%
-                </td>
+      <div className="chart-container">
+        <h2 className="chart-title">Puntualidad por Ruta</h2>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={topRoutes.slice(0, 5)} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" domain={[0, 100]} />
+            <YAxis dataKey="route" type="category" width={100} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="onTimeRate" fill="#4CAF50" name="% Puntualidad" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="chart-container">
+        <h2 className="chart-title">Detalle de Rutas Principales</h2>
+        <div className="routes-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Ruta</th>
+                <th>Vuelos</th>
+                <th>Distancia (km)</th>
+                <th>Retraso Prom.</th>
+                <th>% Puntual</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {topRoutes.map((route, index) => (
+                <tr key={index}>
+                  <td><strong>{route.route}</strong></td>
+                  <td>{route.flights.toLocaleString()}</td>
+                  <td>{route.distance.toLocaleString()}</td>
+                  <td>{route.avgDelay.toFixed(1)} min</td>
+                  <td className={route.onTimeRate >= 75 ? 'good' : 'warning'}>
+                    {route.onTimeRate}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

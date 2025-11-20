@@ -10,16 +10,47 @@ function Home() {
   return (
     <div className="home-container">
       <Profile />
-      <h1>Welcome to UbicAir</h1>
-      <p>Your flight simulation platform</p>
+      <h1>UbicAir</h1>
       
-      <div className="dashboard-section">
-        <FlightStats />
-        <DelayAnalysis />
-        <AirlineComparison />
-        <PopularRoutes />
-        <TimeAnalysis />
-      </div>
+      {/* Sección: Vista General */}
+      <section className="dashboard-section-group">
+        <h2 className="section-title">📊 Vista General</h2>
+        <div className="dashboard-grid">
+          <FlightStats />
+        </div>
+      </section>
+
+      {/* Sección: Análisis de Retrasos */}
+      <section className="dashboard-section-group">
+        <h2 className="section-title">⏱️ Análisis de Retrasos</h2>
+        <div className="dashboard-grid">
+          <DelayAnalysis />
+        </div>
+      </section>
+
+      {/* Sección: Aerolíneas */}
+      <section className="dashboard-section-group">
+        <h2 className="section-title">✈️ Comparación de Aerolíneas</h2>
+        <div className="dashboard-grid">
+          <AirlineComparison />
+        </div>
+      </section>
+
+      {/* Sección: Rutas */}
+      <section className="dashboard-section-group">
+        <h2 className="section-title">🗺️ Rutas Más Frecuentes</h2>
+        <div className="dashboard-grid">
+          <PopularRoutes />
+        </div>
+      </section>
+
+      {/* Sección: Análisis Temporal */}
+      <section className="dashboard-section-group">
+        <h2 className="section-title">📅 Análisis Temporal</h2>
+        <div className="dashboard-grid">
+          <TimeAnalysis />
+        </div>
+      </section>
     </div>
   )
 }

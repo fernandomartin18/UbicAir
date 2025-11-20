@@ -51,33 +51,34 @@ function FlightStats() {
   }
 
   return (
-    <div className="chart-container">
-      <h2 className="chart-title">Estadísticas Generales de Vuelos</h2>
-      
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Total de Vuelos</h3>
-          <p className="stat-value">{stats.totalFlights.toLocaleString()}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Puntualidad</h3>
-          <p className="stat-value">{stats.onTimePercentage}%</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Tiempo Vuelo Promedio</h3>
-          <p className="stat-value">{stats.avgAirTime.toFixed(1)} min</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Distancia Promedio</h3>
-          <p className="stat-value">{stats.avgDistance.toFixed(0)} km</p>
+    <>
+      <div className="chart-container">
+        <h2 className="chart-title">Estadísticas Generales</h2>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h3>Total de Vuelos</h3>
+            <p className="stat-value">{stats.totalFlights.toLocaleString()}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Puntualidad</h3>
+            <p className="stat-value">{stats.onTimePercentage}%</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Tiempo Vuelo Promedio</h3>
+            <p className="stat-value">{stats.avgAirTime.toFixed(1)} min</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Distancia Promedio</h3>
+            <p className="stat-value">{stats.avgDistance.toFixed(0)} km</p>
+          </div>
         </div>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Retrasos Promedio (minutos)</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Retrasos Promedio</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -89,7 +90,7 @@ function FlightStats() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </>
   );
 }
 

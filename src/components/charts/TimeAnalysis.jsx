@@ -72,23 +72,24 @@ function TimeAnalysis() {
   }
 
   return (
-    <div className="chart-container">
-      <h2 className="chart-title">Análisis Temporal de Vuelos</h2>
-      
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Hora Pico Salidas</h3>
-          <p className="stat-value">{peakHours.departure}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Hora Pico Llegadas</h3>
-          <p className="stat-value">{peakHours.arrival}</p>
+    <>
+      <div className="chart-container">
+        <h2 className="chart-title">Horas Pico de Tráfico</h2>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h3>Hora Pico Salidas</h3>
+            <p className="stat-value">{peakHours.departure}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Hora Pico Llegadas</h3>
+            <p className="stat-value">{peakHours.arrival}</p>
+          </div>
         </div>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Tráfico Aéreo por Hora del Día</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Tráfico Aéreo por Hora del Día</h2>
         <ResponsiveContainer width="100%" height={400}>
           <AreaChart data={hourlyData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -116,8 +117,8 @@ function TimeAnalysis() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Retrasos Promedio por Hora</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Retrasos Promedio por Hora</h2>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={hourlyData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -136,8 +137,8 @@ function TimeAnalysis() {
         </ResponsiveContainer>
       </div>
 
-      <div className="chart-wrapper">
-        <h3>Análisis Semanal</h3>
+      <div className="chart-container">
+        <h2 className="chart-title">Análisis Semanal</h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={weeklyData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -161,18 +162,7 @@ function TimeAnalysis() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-
-      <div className="insights">
-        <h3>Insights Temporales</h3>
-        <ul>
-          <li>El período de mayor tráfico es entre las 10:00 y las 14:00</li>
-          <li>Los retrasos son más frecuentes durante las horas pico de la mañana (8:00-10:00)</li>
-          <li>Los viernes tienen el mayor volumen de vuelos pero menor puntualidad</li>
-          <li>Los sábados muestran la mejor tasa de puntualidad</li>
-          <li>Las madrugadas (2:00-4:00) tienen los menores retrasos promedio</li>
-        </ul>
-      </div>
-    </div>
+    </>
   );
 }
 
