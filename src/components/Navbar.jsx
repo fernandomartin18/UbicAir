@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
+import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday } from 'react-icons/md';
 import '../css/Navbar.css';
 
 function Navbar() {
   const [activeSection, setActiveSection] = useState('vista-general');
 
   const sections = [
-    { id: 'vista-general', name: '📊 Vista General' },
-    { id: 'retrasos', name: '⏱️ Retrasos' },
-    { id: 'aerolineas', name: '✈️ Aerolíneas' },
-    { id: 'rutas', name: '🗺️ Rutas' },
-    { id: 'temporal', name: '📅 Temporal' },
+    { id: 'vista-general', name: 'Vista General', icon: MdDashboard },
+    { id: 'retrasos', name: 'Retrasos', icon: MdAccessTime },
+    { id: 'aerolineas', name: 'Aerolíneas', icon: MdFlight },
+    { id: 'rutas', name: 'Rutas', icon: MdMap },
+    { id: 'temporal', name: 'Temporal', icon: MdCalendarToday },
   ];
 
   const scrollToSection = (sectionId) => {
@@ -50,15 +51,19 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {sections.map((section) => (
-          <button
-            key={section.id}
-            className={`navbar-item ${activeSection === section.id ? 'active' : ''}`}
-            onClick={() => scrollToSection(section.id)}
-          >
-            {section.name}
-          </button>
-        ))}
+        {sections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <button
+              key={section.id}
+              className={`navbar-item ${activeSection === section.id ? 'active' : ''}`}
+              onClick={() => scrollToSection(section.id)}
+            >
+              <Icon className="navbar-icon" />
+              <span>{section.name}</span>
+            </button>
+          );
+        })}
       </div>
     </nav>
   );
