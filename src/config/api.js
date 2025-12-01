@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   ESTADISTICAS: `${API_URL}/api/vuelos/estadisticas`,
   ANALISIS_RETRASOS: `${API_URL}/api/vuelos/analisis-retrasos`,
   COMPARACION_AEROLINEAS: `${API_URL}/api/vuelos/comparacion-aerolineas`,
+  RUTAS_POPULARES: `${API_URL}/api/vuelos/rutas-populares`,
 };
 
 export default API_URL;
