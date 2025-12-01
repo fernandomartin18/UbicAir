@@ -123,28 +123,34 @@ function AirlineComparison() {
       <div className="chart-container">
         <h2 className="chart-title">Resumen Detallado de Aerolíneas</h2>
         <div className="airline-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Aerolínea</th>
-                <th>Vuelos</th>
-                <th>% Puntual</th>
-                <th>Retraso Prom.</th>
-                <th>Dist. Prom.</th>
-              </tr>
-            </thead>
-            <tbody>
-              {airlineStats.map((airline, index) => (
-                <tr key={index}>
-                  <td>{airline.airline}</td>
-                  <td>{airline.flights.toLocaleString()}</td>
-                  <td>{airline.onTime}%</td>
-                  <td>{airline.avgDelay.toFixed(1)} min</td>
-                  <td>{airline.avgDistance.toFixed(0)} km</td>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aerolínea</th>
+                  <th>Vuelos</th>
+                  <th>% Puntual</th>
+                  <th>Retraso Prom.</th>
+                  <th>Dist. Prom.</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+            </table>
+            <div className="table-body-scroll">
+              <table>
+                <tbody>
+                  {airlineStats.map((airline, index) => (
+                    <tr key={index}>
+                      <td>{airline.airline}</td>
+                      <td>{airline.flights.toLocaleString()}</td>
+                      <td>{airline.onTime}%</td>
+                      <td>{airline.avgDelay.toFixed(1)} min</td>
+                      <td>{airline.avgDistance.toFixed(0)} km</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </>
