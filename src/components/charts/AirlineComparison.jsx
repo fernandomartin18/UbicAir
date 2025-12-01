@@ -3,12 +3,14 @@ import {
   BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
+import { API_ENDPOINTS } from '../../config/api';
 import '../../css/charts.css';
 
 function AirlineComparison() {
   const [airlineStats, setAirlineStats] = useState([]);
   const [performanceData, setPerformanceData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAirlineData();
@@ -16,68 +18,51 @@ function AirlineComparison() {
 
   const fetchAirlineData = async () => {
     try {
-      // Aquí deberías hacer la llamada a tu API
-      // const response = await fetch('API_ENDPOINT/airlines');
-      // const data = await response.json();
+      setLoading(true);
+      const response = await fetch(API_ENDPOINTS.COMPARACION_AEROLINEAS);
       
-      // Datos de ejemplo - reemplazar con datos reales de la API
-      const mockAirlineStats = [
-        { 
-          airline: 'Alaska Airlines', 
-          flights: 85000, 
-          onTime: 82, 
-          avgDelay: 7.2,
-          avgDistance: 1850 
-        },
-        { 
-          airline: 'American Airlines', 
-          flights: 120000, 
-          onTime: 76, 
-          avgDelay: 9.8,
-          avgDistance: 1650 
-        },
-        { 
-          airline: 'Delta Airlines', 
-          flights: 95000, 
-          onTime: 79, 
-          avgDelay: 8.1,
-          avgDistance: 1720 
-        },
-        { 
-          airline: 'United Airlines', 
-          flights: 110000, 
-          onTime: 75, 
-          avgDelay: 10.2,
-          avgDistance: 1680 
-        },
-        { 
-          airline: 'Southwest Airlines', 
-          flights: 130000, 
-          onTime: 80, 
-          avgDelay: 8.5,
-          avgDistance: 1200 
-        },
-      ];
+      if (!response.ok) {
+        throw new Error('Error al cargar comparación de aerolíneas');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const airlines = result.data.map(airline => ({
+          airline: airline.aerolinea,
+          flights: airline.totalVuelos,
+          onTime: airline.porcentajePuntualidad,
+          avgDelay: airline.retrasoPromedio,
+          avgDistance: airline.distanciaPromedio
+        }));
 
-      const mockPerformanceData = mockAirlineStats.slice(0, 5).map(airline => ({
-        airline: airline.airline.split(' ')[0],
-        puntualidad: airline.onTime,
-        eficiencia: 100 - (airline.avgDelay * 2),
-        volumen: (airline.flights / 1500),
-        satisfacción: airline.onTime - 5,
-      }));
+        // Datos para el gráfico radar (top 5 aerolíneas)
+        const performanceData = airlines.slice(0, 5).map(airline => ({
+          airline: airline.airline.split(' ')[0],
+          puntualidad: airline.onTime,
+          eficiencia: Math.max(0, 100 - (airline.avgDelay * 2)),
+          volumen: Math.min(100, (airline.flights / 1500)),
+          satisfacción: Math.max(0, airline.onTime - 5),
+        }));
+        
+        setAirlineStats(airlines);
+        setPerformanceData(performanceData);
+      }
       
-      setAirlineStats(mockAirlineStats);
-      setPerformanceData(mockPerformanceData);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching airline data:', error);
+      setError(error.message);
       setLoading(false);
     }
   };
 
   if (loading) {
     return <div className="chart-loading">Cargando comparación de aerolíneas...</div>;
+  }
+
+  if (error) {
+    return <div className="chart-error">Error: {error}</div>;
   }
 
   return (

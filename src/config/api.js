@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   VUELOS: `${API_URL}/api/vuelos`,
   ESTADISTICAS: `${API_URL}/api/vuelos/estadisticas`,
   ANALISIS_RETRASOS: `${API_URL}/api/vuelos/analisis-retrasos`,
+  COMPARACION_AEROLINEAS: `${API_URL}/api/vuelos/comparacion-aerolineas`,
 };
 
 export default API_URL;
