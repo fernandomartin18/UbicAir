@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { 
   BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
+import { LoadingContext } from '../../pages/Home';
 import '../../css/charts.css';
 
 function AirlineComparison() {
@@ -11,6 +12,7 @@ function AirlineComparison() {
   const [performanceData, setPerformanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     fetchAirlineData();
@@ -19,6 +21,7 @@ function AirlineComparison() {
   const fetchAirlineData = async () => {
     try {
       setLoading(true);
+      loadingContext?.updateLoadingState('airlines', true);
       const response = await fetch(API_ENDPOINTS.COMPARACION_AEROLINEAS);
       
       if (!response.ok) {
@@ -50,10 +53,12 @@ function AirlineComparison() {
       }
       
       setLoading(false);
+      loadingContext?.updateLoadingState('airlines', false);
     } catch (error) {
       console.error('Error fetching airline data:', error);
       setError(error.message);
       setLoading(false);
+      loadingContext?.updateLoadingState('airlines', false);
     }
   };
 

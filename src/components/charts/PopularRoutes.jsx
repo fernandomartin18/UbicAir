@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { 
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
+import { LoadingContext } from '../../pages/Home';
 import '../../css/charts.css';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
@@ -13,6 +14,7 @@ function PopularRoutes() {
   const [routesByDistance, setRoutesByDistance] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     fetchRoutesData();
@@ -21,6 +23,7 @@ function PopularRoutes() {
   const fetchRoutesData = async () => {
     try {
       setLoading(true);
+      loadingContext?.updateLoadingState('routes', true);
       const response = await fetch(API_ENDPOINTS.RUTAS_POPULARES);
       
       if (!response.ok) {
@@ -49,10 +52,12 @@ function PopularRoutes() {
       }
       
       setLoading(false);
+      loadingContext?.updateLoadingState('routes', false);
     } catch (error) {
       console.error('Error fetching routes data:', error);
       setError(error.message);
       setLoading(false);
+      loadingContext?.updateLoadingState('routes', false);
     }
   };
 

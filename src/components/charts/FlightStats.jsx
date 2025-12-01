@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
+import { LoadingContext } from '../../pages/Home';
 import '../../css/charts.css';
 
 function FlightStats() {
@@ -14,6 +15,7 @@ function FlightStats() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     fetchStats();
@@ -22,6 +24,7 @@ function FlightStats() {
   const fetchStats = async () => {
     try {
       setLoading(true);
+      loadingContext?.updateLoadingState('stats', true);
       const response = await fetch(API_ENDPOINTS.ESTADISTICAS);
       
       if (!response.ok) {
@@ -43,10 +46,12 @@ function FlightStats() {
       }
       
       setLoading(false);
+      loadingContext?.updateLoadingState('stats', false);
     } catch (error) {
       console.error('Error fetching flight stats:', error);
       setError(error.message);
       setLoading(false);
+      loadingContext?.updateLoadingState('stats', false);
     }
   };
 

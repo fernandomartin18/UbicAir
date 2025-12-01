@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
+import { LoadingContext } from '../../pages/Home';
 import '../../css/charts.css';
 
 function TimeAnalysis() {
@@ -12,6 +13,7 @@ function TimeAnalysis() {
   const [peakHours, setPeakHours] = useState({ departure: '', arrival: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     fetchTimeData();
@@ -20,6 +22,7 @@ function TimeAnalysis() {
   const fetchTimeData = async () => {
     try {
       setLoading(true);
+      loadingContext?.updateLoadingState('time', true);
       const response = await fetch(API_ENDPOINTS.ANALISIS_TEMPORAL);
       
       if (!response.ok) {
@@ -52,10 +55,12 @@ function TimeAnalysis() {
       }
       
       setLoading(false);
+      loadingContext?.updateLoadingState('time', false);
     } catch (error) {
       console.error('Error fetching time data:', error);
       setError(error.message);
       setLoading(false);
+      loadingContext?.updateLoadingState('time', false);
     }
   };
 

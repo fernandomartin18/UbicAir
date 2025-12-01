@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { 
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
+import { LoadingContext } from '../../pages/Home';
 import '../../css/charts.css';
 
 function DelayAnalysis() {
@@ -11,6 +12,7 @@ function DelayAnalysis() {
   const [distribution, setDistribution] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     fetchDelayData();
@@ -19,6 +21,7 @@ function DelayAnalysis() {
   const fetchDelayData = async () => {
     try {
       setLoading(true);
+      loadingContext?.updateLoadingState('delays', true);
       const response = await fetch(API_ENDPOINTS.ANALISIS_RETRASOS);
       
       if (!response.ok) {
@@ -47,10 +50,12 @@ function DelayAnalysis() {
       }
       
       setLoading(false);
+      loadingContext?.updateLoadingState('delays', false);
     } catch (error) {
       console.error('Error fetching delay data:', error);
       setError(error.message);
       setLoading(false);
+      loadingContext?.updateLoadingState('delays', false);
     }
   };
 
