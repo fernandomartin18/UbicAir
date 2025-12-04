@@ -81,8 +81,10 @@ function PopularRoutes() {
               angle={-45} 
               textAnchor="end" 
               height={100}
+              interval={0}
+              tick={{ fontSize: 12 }}
             />
-            <YAxis />
+            <YAxis domain={['dataMin - 50', 'dataMax + 37']}/>
             <Tooltip />
             <Legend />
             <Bar dataKey="flights" fill="#8884d8" name="Número de Vuelos" />
@@ -119,7 +121,7 @@ function PopularRoutes() {
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={topRoutes.slice(0, 5)} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" domain={[0, 100]} />
+            <XAxis type="number" domain={[50, 60]} />
             <YAxis dataKey="route" type="category" width={100} />
             <Tooltip />
             <Legend />

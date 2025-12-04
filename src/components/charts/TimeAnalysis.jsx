@@ -144,8 +144,8 @@ function TimeAnalysis() {
           <BarChart data={weeklyData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="day" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
+            <YAxis yAxisId="left" domain={['dataMin - 1000', 'dataMax + 500']} />
+            <YAxis yAxisId="right" orientation="right" domain={['dataMin - 5', 'dataMax + 2']} />
             <Tooltip />
             <Legend />
             <Bar 

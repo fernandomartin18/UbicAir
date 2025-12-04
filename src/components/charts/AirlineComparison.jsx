@@ -82,8 +82,10 @@ function AirlineComparison() {
               angle={-45} 
               textAnchor="end" 
               height={100}
+              interval={0}
+              tick={{ fontSize: 14 }}
             />
-            <YAxis domain={[0, 100]} />
+            <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
             <Tooltip />
             <Legend />
             <Bar dataKey="onTime" fill="#4CAF50" name="% Vuelos Puntuales" />
@@ -96,7 +98,7 @@ function AirlineComparison() {
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={airlineStats} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
+            <XAxis type="number" domain={['dataMin - 400', 'dataMax + 200']} />
             <YAxis dataKey="airline" type="category" width={150} />
             <Tooltip />
             <Legend />
@@ -111,7 +113,7 @@ function AirlineComparison() {
           <RadarChart data={performanceData}>
             <PolarGrid />
             <PolarAngleAxis dataKey="airline" />
-            <PolarRadiusAxis angle={90} domain={[0, 100]} />
+            <PolarRadiusAxis angle={90} domain={[56, 58]} />
             <Radar 
               name="Métricas" 
               dataKey="puntualidad" 

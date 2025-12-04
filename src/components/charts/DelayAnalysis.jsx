@@ -74,8 +74,15 @@ function DelayAnalysis() {
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={delayData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis label={{ value: 'Minutos', angle: -90, position: 'insideLeft' }} />
+            <XAxis 
+              dataKey="month" 
+              interval={0}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis 
+              label={{ value: 'Minutos', angle: -90, position: 'insideLeft' }}
+              domain={['dataMin - 1', 'dataMax + 1']}
+            />
             <Tooltip />
             <Legend />
             <Line 
@@ -101,7 +108,11 @@ function DelayAnalysis() {
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={distribution}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="range" />
+            <XAxis 
+              dataKey="range" 
+              interval={0}
+              tick={{ fontSize: 12 }}
+            />
             <YAxis label={{ value: 'Número de Vuelos', angle: -90, position: 'insideLeft' }} />
             <Tooltip />
             <Legend />
