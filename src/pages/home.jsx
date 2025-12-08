@@ -4,6 +4,7 @@ import '../css/home.css'
 import Profile from '../components/profile'
 import Navbar from '../components/Navbar'
 import FlightSearch from '../components/FlightSearch'
+import FavoriteFlights from '../components/FavoriteFlights'
 import FlightStats from '../components/charts/FlightStats'
 import DelayAnalysis from '../components/charts/DelayAnalysis'
 import AirlineComparison from '../components/charts/AirlineComparison'
@@ -66,6 +67,9 @@ function Home() {
         <div className={`main-content ${showContent ? 'fade-in' : ''}`}>
           {/* Componente de búsqueda */}
           <FlightSearch />
+
+          {/* Sección: Vuelos Favoritos */}
+          <FavoriteFlights />
           
           {/* Sección: Vista General */}
           <section id="vista-general" className="dashboard-section-group">
