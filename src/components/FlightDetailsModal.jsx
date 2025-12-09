@@ -1,4 +1,5 @@
 import { MdClose, MdAccessTime, MdStraighten, MdFlight, MdCalendarToday, MdStar } from 'react-icons/md';
+import { LuStarOff } from 'react-icons/lu';
 import '../css/FlightSearch.css';
 
 function FlightDetailsModal({ flight, isOpen, onClose, isFavorite = false, onToggleFavorite }) {
@@ -31,18 +32,27 @@ function FlightDetailsModal({ flight, isOpen, onClose, isFavorite = false, onTog
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <button className="modal-close" onClick={onClose}>
-            <MdClose />
-          </button>
-          {onToggleFavorite && (
+          {onToggleFavorite && isFavorite && (
             <button 
-              className={`modal-favorite-btn ${isFavorite ? 'active' : ''}`}
+              className="modal-favorite-btn remove"
               onClick={onToggleFavorite}
-              title={isFavorite ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
+              title="Eliminar de favoritos"
+            >
+              <LuStarOff />
+            </button>
+          )}
+          {onToggleFavorite && !isFavorite && (
+            <button 
+              className="modal-favorite-btn add"
+              onClick={onToggleFavorite}
+              title="Agregar a favoritos"
             >
               <MdStar />
             </button>
           )}
+          <button className="modal-close" onClick={onClose}>
+            <MdClose />
+          </button>
         </div>
         
         <h2 className="modal-title">Detalles del Vuelo</h2>

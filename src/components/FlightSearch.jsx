@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MdSearch, MdFlight, MdClose, MdStar } from 'react-icons/md';
 import { API_ENDPOINTS } from '../config/api';
+import { useFavorites } from '../context/FavoritesContext';
 import FlightDetailsModal from './FlightDetailsModal';
 import '../css/FlightSearch.css';
 
@@ -11,13 +12,8 @@ function FlightSearch() {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [favorites, setFavorites] = useState([]);
+  const { favorites, isFavorite, addFavorite, removeFavorite } = useFavorites();
   const debounceTimer = useRef(null);
-
-  // Cargar favoritos al montar el componente
-  useEffect(() => {
-    loadFavorites();
-  }, []);
 
   // Buscar mientras el usuario escribe
   useEffect(() => {
@@ -74,103 +70,13 @@ function FlightSearch() {
     }
   };
 
-  const loadFavorites = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('userId');
-      
-      if (!userId || !token) return;
-
-      const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}/favorites`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setFavorites(data.data?.favorites || []);
-      }
-    } catch (error) {
-      console.error('Error al cargar favoritos:', error);
-    }
-  };
-
-  const isFavoriteFlight = (flight) => {
-    if (!flight || !Array.isArray(favorites)) return false;
-    
-    return favorites.some(fav => {
-      const favDate = new Date(fav.FL_DATE).toISOString().split('T')[0];
-      const flightDate = new Date(flight.FL_DATE).toISOString().split('T')[0];
-      
-      return fav.ORIGIN === flight.ORIGIN && 
-             fav.DEST === flight.DEST && 
-             fav.AIRLINE === flight.AIRLINE &&
-             favDate === flightDate;
-    });
-  };
-
-  const toggleFavorite = async (e, flight) => {
+  const handleToggleFavorite = async (e, flight) => {
     e.stopPropagation();
     
-    try {
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('userId');
-
-      if (!userId || !token) {
-        console.error('No hay sesión activa');
-        return;
-      }
-
-      if (isFavoriteFlight(flight)) {
-        // Eliminar de favoritos
-        const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}/favorites`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            flight: {
-              ORIGIN: flight.ORIGIN,
-              DEST: flight.DEST,
-              AIRLINE: flight.AIRLINE,
-              FL_DATE: flight.FL_DATE,
-              DEP_TIME: flight.DEP_TIME,
-              ARR_TIME: flight.ARR_TIME,
-              AIR_TIME: flight.AIR_TIME,
-              DISTANCE: flight.DISTANCE,
-              DEP_DELAY: flight.DEP_DELAY,
-              ARR_DELAY: flight.ARR_DELAY
-            }
-          })
-        });
-
-        if (response.ok) {
-          setFavorites(favorites.filter(fav => 
-            !(fav.ORIGIN === flight.ORIGIN && 
-              fav.DEST === flight.DEST && 
-              fav.AIRLINE === flight.AIRLINE &&
-              fav.FL_DATE === flight.FL_DATE)
-          ));
-        }
-      } else {
-        // Agregar a favoritos
-        const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}/favorites`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ flight })
-        });
-
-        if (response.ok) {
-          setFavorites([...favorites, flight]);
-        }
-      }
-    } catch (error) {
-      console.error('Error al actualizar favorito:', error);
+    if (isFavorite(flight)) {
+      await removeFavorite(flight, true); // true = skip confirmation for quick toggle
+    } else {
+      await addFavorite(flight);
     }
   };
 
@@ -229,8 +135,8 @@ function FlightSearch() {
                     <MdFlight className="flight-icon" />
                     <span className="airline-name">{flight.AIRLINE}</span>
                     <button 
-                      className={`star-button ${isFavoriteFlight(flight) ? 'active' : ''}`}
-                      onClick={(e) => toggleFavorite(e, flight)}
+                      className={`star-button ${isFavorite(flight) ? 'active' : ''}`}
+                      onClick={(e) => handleToggleFavorite(e, flight)}
                     >
                       <MdStar />
                     </button>
@@ -262,8 +168,8 @@ function FlightSearch() {
         flight={selectedFlight}
         isOpen={showModal}
         onClose={closeModal}
-        isFavorite={selectedFlight ? isFavoriteFlight(selectedFlight) : false}
-        onToggleFavorite={selectedFlight ? () => toggleFavorite(new Event('click'), selectedFlight) : null}
+        isFavorite={selectedFlight ? isFavorite(selectedFlight) : false}
+        onToggleFavorite={selectedFlight ? (e) => handleToggleFavorite(e, selectedFlight) : null}
       />
     </div>
   );
