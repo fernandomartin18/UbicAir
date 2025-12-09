@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext } from 'react'
-import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday, MdStar } from 'react-icons/md'
+import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday, MdStar, MdRadar } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 import '../css/home.css'
 import Profile from '../components/profile'
 import Navbar from '../components/Navbar'
@@ -32,6 +33,7 @@ function FavoritesSection() {
 }
 
 function Home() {
+  const navigate = useNavigate();
   const [allDataLoaded, setAllDataLoaded] = useState(false);
   const [loadingStates, setLoadingStates] = useState({
     stats: true,
@@ -41,6 +43,10 @@ function Home() {
     time: true
   });
   const [showContent, setShowContent] = useState(false);
+
+  const handleRadarClick = () => {
+    navigate('/radar');
+  };
 
   const updateLoadingState = (component, isLoading) => {
     setLoadingStates(prev => ({
@@ -86,6 +92,20 @@ function Home() {
         <div className={`main-content ${showContent ? 'fade-in' : ''}`}>
           {/* Sección: Inicio */}
           <section id="inicio" className="dashboard-section-group">
+            {/* Card Radar de Vuelos */}
+            <div className="radar-card-container">
+              <div className="radar-card" onClick={handleRadarClick}>
+                <span className="new-badge">NEW</span>
+                <div className="radar-card-content">
+                  <MdRadar className="radar-card-icon" />
+                  <div className="radar-card-text">
+                    <h3 className="radar-card-title">Radar de Vuelos</h3>
+                    <p className="radar-card-subtitle">Visualiza vuelos en tiempo real</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Componente de búsqueda */}
             <FlightSearch />
 
