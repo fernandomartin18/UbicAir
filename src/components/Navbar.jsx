@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday } from 'react-icons/md';
+import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday, MdHome } from 'react-icons/md';
 import '../css/Navbar.css';
 
 function Navbar() {
-  const [activeSection, setActiveSection] = useState('vista-general');
+  const [activeSection, setActiveSection] = useState('inicio');
 
   const sections = [
+    { id: 'inicio', name: 'Inicio', icon: MdHome },
     { id: 'vista-general', name: 'Vista General', icon: MdDashboard },
     { id: 'retrasos', name: 'Retrasos', icon: MdAccessTime },
     { id: 'aerolineas', name: 'Aerolíneas', icon: MdFlight },

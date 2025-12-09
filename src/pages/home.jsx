@@ -1,16 +1,35 @@
 import { useState, useEffect, createContext } from 'react'
-import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday } from 'react-icons/md'
+import { MdDashboard, MdAccessTime, MdFlight, MdMap, MdCalendarToday, MdStar } from 'react-icons/md'
 import '../css/home.css'
 import Profile from '../components/profile'
 import Navbar from '../components/Navbar'
 import FlightSearch from '../components/FlightSearch'
+import FavoriteFlights from '../components/FavoriteFlights'
 import FlightStats from '../components/charts/FlightStats'
 import DelayAnalysis from '../components/charts/DelayAnalysis'
 import AirlineComparison from '../components/charts/AirlineComparison'
 import PopularRoutes from '../components/charts/PopularRoutes'
 import TimeAnalysis from '../components/charts/TimeAnalysis'
+import { FavoritesProvider, useFavorites } from '../context/FavoritesContext'
 
 export const LoadingContext = createContext();
+
+function FavoritesSection() {
+  const { favorites } = useFavorites();
+  
+  if (favorites.length === 0) {
+    return null;
+  }
+  
+  return (
+    <section id="favoritos" className="dashboard-section-group">
+      <h2 className="section-title">
+        <MdStar className="section-icon" /> Vuelos Favoritos
+      </h2>
+      <FavoriteFlights />
+    </section>
+  );
+}
 
 function Home() {
   const [allDataLoaded, setAllDataLoaded] = useState(false);
@@ -42,10 +61,11 @@ function Home() {
   }, [loadingStates, allDataLoaded]);
 
   return (
-    <LoadingContext.Provider value={{ updateLoadingState }}>
-      <div className="home-container">
-        <Navbar />
-        <Profile />
+    <FavoritesProvider>
+      <LoadingContext.Provider value={{ updateLoadingState }}>
+        <div className="home-container">
+          <Navbar />
+          <Profile />
         
         {/* Hero Section - Pantalla de carga */}
         <div 
@@ -64,8 +84,14 @@ function Home() {
         
         {/* Contenido principal */}
         <div className={`main-content ${showContent ? 'fade-in' : ''}`}>
-          {/* Componente de búsqueda */}
-          <FlightSearch />
+          {/* Sección: Inicio */}
+          <section id="inicio" className="dashboard-section-group">
+            {/* Componente de búsqueda */}
+            <FlightSearch />
+
+            {/* Sección: Vuelos Favoritos */}
+            <FavoritesSection />
+          </section>
           
           {/* Sección: Vista General */}
           <section id="vista-general" className="dashboard-section-group">
@@ -118,7 +144,8 @@ function Home() {
           </section>
         </div>
       </div>
-    </LoadingContext.Provider>
+      </LoadingContext.Provider>
+    </FavoritesProvider>
   )
 }
 
