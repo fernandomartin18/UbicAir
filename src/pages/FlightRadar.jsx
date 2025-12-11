@@ -7,7 +7,6 @@ import '../css/flightRadar.css'
 function FlightRadar() {
   return (
     <div className="radar-container">
-      <Profile />
       <FlightRadarLive />
     </div>
   )

@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import '../css/FlightRadarLive.css';
 
 // Iconos personalizados para los aviones
-const createPlaneIcon = (rotation = 0, color = '#2196F3') => {
+const createPlaneIcon = (rotation = 0, color = '#667eea') => {
   return L.divIcon({
     html: `
       <div style="transform: rotate(${rotation}deg); display: flex; align-items: center; justify-content: center;">
@@ -22,15 +22,18 @@ const createPlaneIcon = (rotation = 0, color = '#2196F3') => {
   });
 };
 
-// Componente para ajustar vista del mapa
+// Componente para ajustar vista del mapa solo en la carga inicial
 const MapUpdater = ({ flights }) => {
   const map = useMap();
+  const hasInitialized = useRef(false);
   
   useEffect(() => {
-    if (flights && flights.length > 0) {
+    // Solo ajustar el mapa la primera vez que hay vuelos
+    if (flights && flights.length > 0 && !hasInitialized.current) {
       const bounds = flights.map(f => [f.latitude, f.longitude]);
       if (bounds.length > 0) {
         map.fitBounds(bounds, { padding: [50, 50], maxZoom: 6 });
+        hasInitialized.current = true;
       }
     }
   }, [flights, map]);
@@ -123,9 +126,9 @@ const FlightRadarLive = () => {
    * Calcular color del avión según progreso
    */
   const getFlightColor = (progress) => {
-    if (progress < 30) return '#4CAF50'; // Verde - despegue
-    if (progress < 70) return '#2196F3'; // Azul - crucero
-    return '#FF9800'; // Naranja - aproximación
+    if (progress < 30) return '#667eea'; // Morado claro - despegue
+    if (progress < 70) return '#764ba2'; // Morado oscuro - crucero
+    return '#667eea'; // Morado claro - aproximación
   };
 
   /**
@@ -191,21 +194,13 @@ const FlightRadarLive = () => {
   return (
     <div className="flight-radar-live">
       <div className="radar-header">
-        <h1>🛩️ Flight Radar Live - Simulador IoT</h1>
+        <h1>Radar de Vuelos IoT</h1>
         <div className="radar-stats">
           {stats && (
             <>
               <div className="stat-item">
                 <span className="stat-label">Vuelos Activos:</span>
                 <span className="stat-value">{stats.vuelosActivos}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Total Registros:</span>
-                <span className="stat-value">{stats.totalRegistros.toLocaleString()}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Últimas 24h:</span>
-                <span className="stat-value">{stats.vuelosUltimas24h}</span>
               </div>
             </>
           )}
@@ -281,7 +276,9 @@ const FlightRadarLive = () => {
       {/* Panel lateral con detalles de vuelos */}
       <div className="flights-container">
         {activeFlights.length > 0 && (
-          <div className="flights-grid">
+          <>
+            <h2 className="flights-section-title">Tarjetas de información de vuelos</h2>
+            <div className="flights-grid">
             {activeFlights.map((flight) => (
               <div 
                 key={flight._id} 
@@ -347,6 +344,7 @@ const FlightRadarLive = () => {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
 
