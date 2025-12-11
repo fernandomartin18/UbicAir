@@ -1,29 +1,37 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../css/FlightRadarLive.css';
 
-// Iconos personalizados para los aviones
-const createPlaneIcon = (rotation = 0, color = '#667eea') => {
+// Iconos personalizados para los aviones con tamaño adaptativo
+const createPlaneIcon = (rotation = 0, color = '#667eea', zoomLevel = 6) => {
+  // Ajustar tamaño según nivel de zoom
+  // Zoom 0-4: 28px, Zoom 5-7: 36px, Zoom 8+: 48px
+  let size = 36;
+  if (zoomLevel <= 4) size = 28;
+  else if (zoomLevel >= 8) size = 48;
+  
+  const anchor = size / 2;
+  
   return L.divIcon({
     html: `
-      <div style="transform: rotate(${rotation}deg); display: flex; align-items: center; justify-content: center;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg">
+      <div style="width: ${size}px; height: ${size}px; display: flex; align-items: center; justify-content: center;">
+        <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(${rotation}deg); transform-origin: center;">
           <path d="M21,16v-2l-8-5V3.5C13,2.67,12.33,2,11.5,2S10,2.67,10,3.5V9l-8,5v2l8-2.5V19l-2,1.5V22l3.5-1l3.5,1v-1.5L13,19v-5.5L21,16z"/>
         </svg>
       </div>
     `,
     className: 'plane-icon',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16]
+    iconSize: [size, size],
+    iconAnchor: [anchor, anchor],
+    popupAnchor: [0, -anchor]
   });
 };
 
-// Componente para ajustar vista del mapa solo en la carga inicial
-const MapUpdater = ({ flights }) => {
+// Componente para ajustar vista del mapa solo en la carga inicial y escuchar zoom
+const MapUpdater = ({ flights, onZoomChange }) => {
   const map = useMap();
   const hasInitialized = useRef(false);
   
@@ -38,6 +46,19 @@ const MapUpdater = ({ flights }) => {
     }
   }, [flights, map]);
   
+  useEffect(() => {
+    // Escuchar cambios de zoom
+    const handleZoom = () => {
+      onZoomChange(map.getZoom());
+    };
+    
+    map.on('zoomend', handleZoom);
+    
+    return () => {
+      map.off('zoomend', handleZoom);
+    };
+  }, [map, onZoomChange]);
+  
   return null;
 };
 
@@ -51,6 +72,7 @@ const FlightRadarLive = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [mapZoom, setMapZoom] = useState(6);
   const intervalRef = useRef(null);
 
   // Configuración de la API
@@ -126,13 +148,15 @@ const FlightRadarLive = () => {
    * Calcular color del avión según progreso
    */
   const getFlightColor = (progress) => {
-    if (progress < 30) return '#667eea'; // Morado claro - despegue
-    if (progress < 70) return '#764ba2'; // Morado oscuro - crucero
-    return '#667eea'; // Morado claro - aproximación
+    if (progress < 30) return '#667eea';
+    if (progress < 70) return '#3351d5ff';
+    if (progress <= 100) return '#0724a3ff'; 
+    return '#667eea';
   };
 
   /**
    * Calcular rotación del icono según dirección del vuelo
+   * El avión en SVG apunta hacia arriba (Norte = 0°)
    */
   const calculateRotation = (flight) => {
     // Obtener coordenadas de origen y destino desde la configuración
@@ -152,10 +176,17 @@ const FlightRadarLive = () => {
     const dest = airports[flight.destination];
     if (!dest) return 0;
 
-    const dLng = dest.lng - flight.longitude;
+    // Calcular la diferencia en coordenadas
     const dLat = dest.lat - flight.latitude;
+    const dLng = dest.lng - flight.longitude;
     
-    const angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
+    // Calcular el ángulo en grados (atan2 devuelve el ángulo desde el eje X)
+    // Convertimos para que 0° sea Norte (arriba)
+    let angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
+    
+    // Normalizar a 0-360
+    angle = (angle + 360) % 360;
+    
     return angle;
   };
 
@@ -166,6 +197,13 @@ const FlightRadarLive = () => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('es-ES');
   };
+
+  /**
+   * Ordenar vuelos por progreso (memorizado para evitar re-renders)
+   */
+  const sortedFlights = useMemo(() => {
+    return [...activeFlights].sort((a, b) => b.progress - a.progress);
+  }, [activeFlights]);
 
   if (loading) {
     return (
@@ -225,7 +263,7 @@ const FlightRadarLive = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            <MapUpdater flights={activeFlights} />
+            <MapUpdater flights={activeFlights} onZoomChange={setMapZoom} />
 
             {activeFlights.map((flight) => {
               const rotation = calculateRotation(flight);
@@ -236,7 +274,7 @@ const FlightRadarLive = () => {
                   {/* Marcador del avión */}
                   <Marker 
                     position={[flight.latitude, flight.longitude]}
-                    icon={createPlaneIcon(rotation, color)}
+                    icon={createPlaneIcon(rotation, color, mapZoom)}
                     eventHandlers={{
                       click: () => setSelectedFlight(flight)
                     }}
@@ -279,7 +317,7 @@ const FlightRadarLive = () => {
           <>
             <h2 className="flights-section-title">Tarjetas de información de vuelos</h2>
             <div className="flights-grid">
-            {activeFlights.map((flight) => (
+            {sortedFlights.map((flight) => (
               <div 
                 key={flight._id} 
                 className="flight-card"
