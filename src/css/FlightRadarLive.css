@@ -1,0 +1,486 @@
+/* Flight Radar Live - Visualización de Simulador IoT */
+
+.flight-radar-live {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+  padding: 2rem;
+  color: #fff;
+}
+
+/* Iconos de avión personalizados */
+.plane-icon {
+  background: transparent !important;
+  border: none !important;
+  transition: all 0.3s ease;
+}
+
+.plane-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition: all 0.3s ease;
+}
+
+.plane-icon:hover svg {
+  transform: scale(1.2);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+/* Popup personalizado */
+.flight-popup {
+  min-width: 200px;
+}
+
+.flight-popup h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2196F3;
+}
+
+.flight-popup p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.flight-popup hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 0.5rem 0;
+}
+
+.progress-bar-mini {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill-mini {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 3px;
+}
+
+/* Contenedor del mapa */
+.map-container {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.no-flights-map {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4rem;
+  text-align: center;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.no-flights-map p {
+  font-size: 1.2rem;
+  color: #b0b8c1;
+  margin-bottom: 0.5rem;
+}
+
+.no-flights-map .hint {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Override Leaflet styles */
+.leaflet-container {
+  background: #1a2332;
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: white;
+  border-radius: 8px;
+}
+
+.leaflet-popup-tip {
+  background: white;
+}
+
+/* Header */
+.radar-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.radar-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #4CAF50, #2196F3, #FF9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.radar-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #b0b8c1;
+  margin-right: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  margin-top: 1rem;
+  color: #b0b8c1;
+}
+
+/* Error State */
+.error-container {
+  text-align: center;
+  padding: 3rem;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+/* Flights Grid */
+.flights-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.flights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.no-flights {
+  text-align: center;
+  padding: 4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.no-flights p {
+  font-size: 1.2rem;
+  color: #b0b8c1;
+  margin-bottom: 0.5rem;
+}
+
+.no-flights .hint {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Flight Card */
+.flight-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border-left: 4px solid #4CAF50;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flight-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Flight Header */
+.flight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.flight-id {
+  font-size: 1.3rem;
+  margin: 0;
+  color: #fff;
+}
+
+.flight-time {
+  font-size: 0.85rem;
+  color: #b0b8c1;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+/* Flight Route */
+.flight-route {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.airport {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.airport.origin {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.airport.destination {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+}
+
+.route-arrow {
+  font-size: 1.5rem;
+  color: #b0b8c1;
+}
+
+/* Progress Bar */
+.flight-progress {
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4CAF50;
+  transition: width 0.5s ease;
+  border-radius: 4px;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #b0b8c1;
+  font-weight: bold;
+}
+
+/* Flight Details */
+.flight-details {
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  color: #b0b8c1;
+}
+
+.detail-value {
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Flight Status */
+.flight-status {
+  display: flex;
+  justify-content: center;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.status-takeoff {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.status-cruise {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+  border: 1px solid rgba(33, 150, 243, 0.4);
+}
+
+.status-landing {
+  background: rgba(255, 152, 0, 0.2);
+  color: #FF9800;
+  border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+/* Footer */
+.radar-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b0b8c1;
+  font-size: 0.9rem;
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background: #4CAF50;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .flight-radar-live {
+    padding: 1rem;
+  }
+
+  .radar-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .radar-stats {
+    gap: 1rem;
+  }
+
+  .stat-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .flights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flight-route {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .route-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .radar-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .flight-card {
+    padding: 1rem;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
