@@ -2,13 +2,12 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import axios from 'axios';
 import L from 'leaflet';
+import { MdSearch, MdClose } from 'react-icons/md';
 import 'leaflet/dist/leaflet.css';
 import '../css/FlightRadarLive.css';
 
 // Iconos personalizados para los aviones con tamaño adaptativo
 const createPlaneIcon = (rotation = 0, color = '#667eea', zoomLevel = 6) => {
-  // Ajustar tamaño según nivel de zoom
-  // Zoom 0-4: 28px, Zoom 5-7: 36px, Zoom 8+: 48px
   let size = 36;
   if (zoomLevel <= 4) size = 28;
   else if (zoomLevel >= 8) size = 48;
@@ -73,6 +72,7 @@ const FlightRadarLive = () => {
   const [error, setError] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [mapZoom, setMapZoom] = useState(6);
+  const [searchTerm, setSearchTerm] = useState('');
   const intervalRef = useRef(null);
 
   // Configuración de la API
@@ -156,7 +156,6 @@ const FlightRadarLive = () => {
 
   /**
    * Calcular rotación del icono según dirección del vuelo
-   * El avión en SVG apunta hacia arriba (Norte = 0°)
    */
   const calculateRotation = (flight) => {
     // Obtener coordenadas de origen y destino desde la configuración
@@ -179,12 +178,7 @@ const FlightRadarLive = () => {
     // Calcular la diferencia en coordenadas
     const dLat = dest.lat - flight.latitude;
     const dLng = dest.lng - flight.longitude;
-    
-    // Calcular el ángulo en grados (atan2 devuelve el ángulo desde el eje X)
-    // Convertimos para que 0° sea Norte (arriba)
     let angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
-    
-    // Normalizar a 0-360
     angle = (angle + 360) % 360;
     
     return angle;
@@ -199,11 +193,27 @@ const FlightRadarLive = () => {
   };
 
   /**
+   * Filtrar vuelos por término de búsqueda
+   */
+  const filteredFlights = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return activeFlights;
+    }
+    
+    const term = searchTerm.toLowerCase().trim();
+    return activeFlights.filter(flight => 
+      flight.flightId.toLowerCase().includes(term) ||
+      flight.origin.toLowerCase().includes(term) ||
+      flight.destination.toLowerCase().includes(term)
+    );
+  }, [activeFlights, searchTerm]);
+
+  /**
    * Ordenar vuelos por progreso (memorizado para evitar re-renders)
    */
   const sortedFlights = useMemo(() => {
-    return [...activeFlights].sort((a, b) => b.progress - a.progress);
-  }, [activeFlights]);
+    return [...filteredFlights].sort((a, b) => b.progress - a.progress);
+  }, [filteredFlights]);
 
   if (loading) {
     return (
@@ -298,12 +308,6 @@ const FlightRadarLive = () => {
                       </div>
                     </Popup>
                   </Marker>
-
-                  {/* Línea de ruta (opcional) - descomentarvuelos si quieres ver la trayectoria */}
-                  {/* <Polyline 
-                    positions={[[flight.latitude, flight.longitude], getDestCoords(flight.destination)]}
-                    pathOptions={{ color: color, weight: 2, opacity: 0.5, dashArray: '5, 10' }}
-                  /> */}
                 </div>
               );
             })}
@@ -316,6 +320,34 @@ const FlightRadarLive = () => {
         {activeFlights.length > 0 && (
           <>
             <h2 className="flights-section-title">Tarjetas de información de vuelos</h2>
+            
+            {/* Buscador de vuelos */}
+            <div className="flight-radar-search">
+              <div className="search-box">
+                <MdSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Buscar por origen, destino o número de vuelo..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                />
+                {searchTerm && (
+                  <button 
+                    className="clear-button" 
+                    onClick={() => setSearchTerm('')}
+                  >
+                    <MdClose />
+                  </button>
+                )}
+              </div>
+              {searchTerm && (
+                <div className="search-results-count">
+                  {sortedFlights.length} vuelo{sortedFlights.length !== 1 ? 's' : ''} encontrado{sortedFlights.length !== 1 ? 's' : ''}
+                </div>
+              )}
+            </div>
+
             <div className="flights-grid">
             {sortedFlights.map((flight) => (
               <div 

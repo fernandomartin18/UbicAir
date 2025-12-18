@@ -74,7 +74,7 @@ function FlightSearch() {
     e.stopPropagation();
     
     if (isFavorite(flight)) {
-      await removeFavorite(flight, true); // true = skip confirmation for quick toggle
+      await removeFavorite(flight, true);
     } else {
       await addFavorite(flight);
     }
