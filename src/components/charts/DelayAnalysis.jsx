@@ -4,7 +4,7 @@ import {
   Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
-import { LoadingContext } from '../../pages/Home';
+import { LoadingContext } from '../../pages/home';
 import '../../css/charts.css';
 
 function DelayAnalysis() {

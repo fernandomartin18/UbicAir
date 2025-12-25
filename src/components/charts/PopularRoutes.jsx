@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { API_ENDPOINTS } from '../../config/api';
-import { LoadingContext } from '../../pages/Home';
+import { LoadingContext } from '../../pages/home';
 import '../../css/charts.css';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B'];
