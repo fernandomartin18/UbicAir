@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './css/App.css'
 import Login from './pages/Login'
 import Signup from './pages/signup'
-import Home from './pages/Home'
+import Home from './pages/home'
+import FlightRadar from './pages/FlightRadar'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/radar" element={<FlightRadar />} />
       </Routes>
     </Router>
   )
